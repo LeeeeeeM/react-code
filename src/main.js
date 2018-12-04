@@ -53,7 +53,9 @@ class Parent extends React.Component {
     console.log(`Parent constructor`)
     this.state = {
       val: 'constructor',
-      count: 0
+      count: 0,
+      content: '',
+      upperCase: false
     }
   }
   componentWillMount() {
@@ -80,12 +82,6 @@ class Parent extends React.Component {
   componentDidUpdate() {
     console.log(`parent componentDidUpdate`)
   }
-  show() {
-    console.log(`show`)
-    this.setState({
-      val: 'eventValue'
-    })
-  }
   add() {
     setTimeout(() => {
       this.setState({
@@ -96,11 +92,46 @@ class Parent extends React.Component {
       })
     })
   }
+  inputChange(e) {
+    console.log(e)
+    this.setState({
+      content: e.target.value
+    })
+    // 单向数据流，可控 not setState
+  }
+  toggleCase() {
+    const upper = this.state.upperCase
+
+    this.setState({
+      upperCase: !upper
+    })
+    const value = this.refs.inputRef.value
+
+    window.it = this.refs.inputRef // 留给控制台一个钩子可以引用该DOM
+    // 这里也充分说明了setState的执行是同步的，只不过存在事务使得state入栈之后做了合并看起来像是异步，这里和Vue不一样，所以react引入了fiber
+    
+    //这里setState入栈enqueueState，下面代码先执行，所以添加一个异步操作等DOM渲染之后再改变DOM的props
+    // this.refs.inputRef.value = upper ? value.toLowerCase() : value.toUpperCase()
+    // setTimeout(() => {
+    //   this.refs.inputRef.value = upper ? value.toLowerCase() : value.toUpperCase()
+    // })
+
+    Promise.resolve().then(() => {
+      this.refs.inputRef.value = upper ? value.toLowerCase() : value.toUpperCase()
+    })
+
+    // 这里不要setState否则进入render重新刷新view，或者我们的upperCase不进入state中，直接挂载在component实例上
+    // this.setState({
+    //   upperCase: !upper
+    // })
+  }
   render() {
     console.log(`parent render`)
     return (
-      <div className="container" onClick={this.show.bind(this)}>
+      <div className="container">
         <div onClick={this.add.bind(this)}>{this.state.count}</div>
+        <input ref="inputRef" type="text" value={this.state.content} onChange={this.inputChange.bind(this)}/>
+        <div onClick={this.toggleCase.bind(this)}>Toggle Case</div>
         <Child value={this.state.val} />
       </div>
     )
