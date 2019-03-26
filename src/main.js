@@ -1,3 +1,6 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+
 const originCreateElement = document.createElement
 document.createElement = function () {
   return originCreateElement.apply(document, arguments)
@@ -60,17 +63,20 @@ class Parent extends React.Component {
   }
   componentWillMount() {
     console.log(`parent componentWillMount`)
-    this.setState({ val: 'componentWillMount' })
-
   }
   componentDidMount() {
+    this.setState(state => ({
+      count: ++state.count
+    }))
+    console.log(this.state.count)
+    this.setState(state => ({
+      count: ++state.count
+    }))
+    console.log(this.state.count)
     console.log(`parent componentDidMount`)
-    this.setState({ val: 'componentDidMount' })
   }
   componentWillReceiveProps(nextProps) {
     console.log(`parent componentWillReceiveProps`)
-    this.setState({ val: 'componentWillReceiveProps' })
-
   }
   shouldComponentUpdate(nextProps, nextState) {
     console.log(`parent shouldComponentUpdate`)
@@ -83,13 +89,16 @@ class Parent extends React.Component {
     console.log(`parent componentDidUpdate`)
   }
   add() {
+    console.log(this.state)
     setTimeout(() => {
-      this.setState({
-        count: ++this.state.count
-      })
-      this.setState({
-        count: ++this.state.count
-      })
+      this.setState(state => ({
+        count: ++state.count
+      }))
+      console.log(this.state.count)
+      this.setState(state => ({
+        count: ++state.count
+      }))
+      console.log(this.state.count)
     })
   }
   inputChange(e) {
@@ -102,9 +111,9 @@ class Parent extends React.Component {
   toggleCase() {
     const upper = this.state.upperCase
 
-    this.setState({
-      upperCase: !upper
-    })
+    this.setState(state => ({
+      upperCase: !state.upperCase
+    }))
     const value = this.inputRef.value
 
     window.it = this.inputRef // 留给控制台一个钩子可以引用该DOM
