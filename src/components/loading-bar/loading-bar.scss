@@ -1,0 +1,43 @@
+$width: 100px;
+$css-prefix: lui;
+
+$loading-bar-bg-color-success: aqua;
+$loading-bar-bg-color-error: #ff0000;
+$zindex-loading-bar: 99;
+
+.#{$css-prefix}-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $zindex-loading-bar;
+  width: 100%;
+  transition: opacity .5s linear;
+
+  /* element */
+  &__inner {
+    height: 100%;
+    transition: width .3s linear;
+  }
+
+  &--show {
+    opacity: 1;
+  }
+
+  &--hide {
+    opacity: 0;
+  }
+
+  /* modifier */
+  &--success {
+    .#{$css-prefix}-loading-bar__inner {
+      background-color: $loading-bar-bg-color-success;
+    }
+  }
+
+  &--error {
+    .#{$css-prefix}-loading-bar__inner {
+      background-color: $loading-bar-bg-color-error;
+    }
+  }
+}
