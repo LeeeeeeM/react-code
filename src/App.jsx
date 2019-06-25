@@ -1,23 +1,22 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 import './app.scss'
 
-export default class App extends React.Component {
-  constructor(...args) {
-    super(...args)
-    this.state = {
-      name: 1
-    }
-  }
-
+export default class App extends Component {
   componentDidMount() {
     this.$LoadingBar.start()
     setTimeout(() => {
       this.$LoadingBar.finish()
     }, 1000)
   }
-
   render() {
-    return (<div></div>)
+    return (<div>
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/infinite-list">infinite-list</Link></li>
+      </ul>
+      {this.props.children}
+    </div>)
   }
 }
