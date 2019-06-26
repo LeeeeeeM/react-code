@@ -13,7 +13,7 @@ export default class extends Component {
   }
 
   componentDidMount() {
-    const list = this.produceData(this.order + 1000)
+    const list = this.produceData(this.order + 10000)
     this.setState({ list })
   }
 

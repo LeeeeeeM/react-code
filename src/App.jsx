@@ -15,6 +15,7 @@ export default class App extends Component {
       <ul>
         <li><Link to="/">Home</Link></li>
         <li><Link to="/infinite-list">infinite-list</Link></li>
+        <li><Link to="/danmu-stage">danmu-stage</Link></li>
       </ul>
       {this.props.children}
     </div>)
