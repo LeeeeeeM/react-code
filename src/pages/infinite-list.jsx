@@ -13,7 +13,7 @@ export default class extends Component {
   }
 
   componentDidMount() {
-    const list = this.produceData(this.order + 10000)
+    const list = this.produceData(this.order + 1000)
     this.setState({ list })
   }
 
@@ -45,6 +45,7 @@ export default class extends Component {
 
   render() {
     const { list, offset } = this.state
+    console.log(list)
     const styles = {
       position: 'fixed',
       top: '100px',

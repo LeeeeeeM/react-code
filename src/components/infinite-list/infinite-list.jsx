@@ -1,8 +1,8 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import classNames from 'classnames'
 import debounce from 'lodash/debounce'
 
-class InfiniteList extends PureComponent  {
+class InfiniteList extends Component {
   constructor() {
     super()
     this.state = {
@@ -21,6 +21,46 @@ class InfiniteList extends PureComponent  {
     }
     this.scrollHandler = this.scrollHandler.bind(this)
     this.debounceFn = debounce(this.debounceScroll.bind(this), 10)
+    this.wrapper = React.createRef()
+  }
+
+  componentDidMount() {
+    const visibleHeight = this.wrapper.current.clientHeight
+    const { startIndex } = this.state
+    const result = this.calculateVisible(startIndex, false)
+    this.setState({
+      visibleHeight,
+      ...result
+    })
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const contentHeight = props.list.reduce((p, c) => p + c.height, 0)
+    return {
+      contentHeight
+    }
+  }
+
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    return null
+  }
+
+  scrollAnimation(start, end, fn, step = 2) {
+    if (start >= end) return
+    const distance = start + (end - start) / step
+    start = distance > end ? end : distance
+    fn(start)
+    this.animationTimer = requestAnimationFrame(this.scrollAnimation.bind(this, start, end, fn, step))
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.list !== this.props.list) {
+      const { startIndex } = this.state
+      const result = this.calculateVisible(startIndex, false)
+      this.setState({
+        ...result
+      })
+    }
   }
 
   debounceScroll(scrollTop) {
@@ -30,32 +70,6 @@ class InfiniteList extends PureComponent  {
       startIndex,
       ...result
     })
-  }
-
-  componentDidMount() {
-    const visibleHeight = this.wrapper.clientHeight
-    const { startIndex } = this.state
-    const result = this.calculateVisible(startIndex, false)
-    this.setState({
-      visibleHeight,
-      ...result
-    })
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const contentHeight = nextProps.list.reduce((p, c) => p + c.height, 0)
-    this.setState({
-      contentHeight
-    })
-  }
-
-  componentDidUpdate(preProps) {
-    if (preProps.list !== this.props.list) {
-      const result = this.calculateVisible(this.state.startIndex, false)
-      this.setState({
-        ...result
-      })
-    }
   }
 
   scrollHandler(e) {
@@ -166,7 +180,7 @@ class InfiniteList extends PureComponent  {
   render() {
     const { visibleData, contentHeight, top } = this.state
 
-    return (<div className="infinite-list infinite-list-wrapper" onScroll={this.scrollHandler} ref={node => {this.wrapper = node}}>
+    return (<div className="infinite-list infinite-list-wrapper" onScroll={this.scrollHandler} ref={this.wrapper}>
       <div className="infinite-list__ghost" style={{ height: contentHeight }}></div>
       <div className="infinite-list__content" style={{ transform: `translate3d(0, ${top}px, 0)` }}>
         {
